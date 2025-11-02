@@ -1,5 +1,5 @@
 "use client";
-
+import NotificationsProvider from '@/providers/Notification.provider';
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { SWRConfig } from "swr";
 
@@ -35,9 +35,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SWRConfig value={{ fetcher, refreshInterval: 15000, revalidateOnFocus: true }}>
-        {children}
-      </SWRConfig>
+      <NotificationsProvider>
+        <SWRConfig value={{ fetcher, refreshInterval: 15000, revalidateOnFocus: true }}>
+          {children}
+        </SWRConfig>
+      </NotificationsProvider>
     </ThemeProvider>
   )
 }
