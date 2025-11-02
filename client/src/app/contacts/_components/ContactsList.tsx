@@ -34,18 +34,30 @@ const ContactList = ({
   const limitFromUrl = Number(params.get('limit') ?? initialLimit) || initialLimit;
 
   const key = `/api/contacts?page=${pageFromUrl}&limit=${limitFromUrl}${currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : ''}`;
-  const { data, error, isLoading, isValidating } = useSWR<PageData>(key, { fallbackData: initial });
+  const { data, error, isLoading, isValidating, mutate } = useSWR<PageData>(key, { fallbackData: initial });
   const loading = isLoading && !data;
   const refreshing = isValidating && !!data;
 
-  const [contactToBeUpdated, setContactToBeUpdated] = useState<Contact | null>(null);
   const [emailToSearchContacts, setEmailToSearchContacts] = useState<string>("");
   const [debouncedEmail, setDebouncedEmail] = useState(emailToSearchContacts);
-  const [displayedModalUpdate, setDisplayedModalUpdate] = useState<boolean>(false);
 
   useEffect(() => {
     setEmailToSearchContacts(currentSearch);
   }, [currentSearch]);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedEmail(emailToSearchContacts);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [emailToSearchContacts]);
+
+  useEffect(() => {
+    if (debouncedEmail !== currentSearch) {
+      updateQuery(1, limitFromUrl, debouncedEmail);
+    }
+  }, [limitFromUrl, debouncedEmail]);
 
   const updateQuery = (nextPage: number, nextLimit: number, nextSearch?: string) => {
     const qs = new URLSearchParams(params.toString());
@@ -89,7 +101,15 @@ const ContactList = ({
         method: "DELETE"
       });
       if (response.status === 204) {
-        updateQuery(1, limitFromUrl);
+        const currentList = data ?? initial;
+        const wasLastItemOnPage = currentList.data.length === 1;
+
+        if (wasLastItemOnPage && pageFromUrl > 1) {
+          updateQuery(pageFromUrl - 1, limitFromUrl);
+        } else {
+          await mutate(); // revalidate the current key
+        }
+
         notify({ type: "removeContact", label: contact.lastName });
       };
     } catch (err) {
@@ -100,7 +120,11 @@ const ContactList = ({
 
   const handleUpdate = (e: React.MouseEvent<HTMLButtonElement>, contact: Contact) => {
     e.preventDefault();
-    setContactToBeUpdated(contact);
+    router.push(`/contacts/update/${contact._id}`)
+  }
+
+  const handleNewContact = () => {
+    router.push("/contacts/new");
   }
 
   if (error) return <Alert severity="error">Failed to load contacts.</Alert>;
@@ -112,23 +136,8 @@ const ContactList = ({
   const total = pageData.total;
 
   if (!pageData.data.length) {
-    notify({ type: "errorUnexpected", label: "No contacts found." });
     return <Alert severity="info">No contacts found.</Alert>;
   }
-  
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedEmail(emailToSearchContacts);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [emailToSearchContacts]);
-
-  useEffect(() => {
-    if (debouncedEmail !== currentSearch) {
-      updateQuery(1, limitFromUrl, debouncedEmail);
-    }
-  }, [limitFromUrl, debouncedEmail]);
 
   return (
     <div className="contacts-container">
@@ -137,7 +146,7 @@ const ContactList = ({
       </div>
       <div className="contacts-container__header">
         <ContactSearchBar searchContact={handleSearchContact} />
-        <Button variant="outlined" size="small" color="primary"  onClick={() => setDisplayedModalUpdate(true)}>Add contact</Button>
+        <Button variant="outlined" size="small" color="primary"  onClick={handleNewContact}>Add contact</Button>
       </div>
       <div className="contacts-container__body">
         <div className="contacts-container__body__list-section">
