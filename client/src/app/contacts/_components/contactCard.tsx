@@ -51,9 +51,9 @@ function ContactCard({
         </span>
       </div>
       <div className="contact-card-container__buttons">
-        <Button variant="outlined" size="small" onClick={handleUpdate}>Update</Button>
-        <Button variant="outlined" size="small" color="warning" onClick={handleDelete}>Delete</Button>
-        <Button variant="outlined" size="small" onClick={() => handleCopy(contact.email)}>Email</Button>
+        <Button variant="outlined" size="small" color="primary" onClick={handleUpdate}>Update</Button>
+        <Button variant="outlined" size="small" color="primary" onClick={handleDelete}>Delete</Button>
+        <Button variant="outlined" size="small" color="primary" onClick={() => handleCopy(contact.email)}>Email</Button>
       </div>
     </div>
   )
