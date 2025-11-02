@@ -40,6 +40,36 @@ export const ContactService = {
   async create(payload) {
     return ContactRepository.create(payload);
   },
+
+  async update(id, updates) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
+      const err = new Error("Invalid contact id");
+      err.name = "CastError";
+      err.kind = "ObjectId";
+      throw err;
+    }
+    return ContactRepository.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+  },
+
+  async delete(id) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
+      const err = new Error("Invalid contact id");
+      err.name = "CastError";
+      err.kind = "ObjectId";
+      throw err;
+    }
+    return ContactRepository.findByIdAndDelete(id);
+  },
+
+  async emailsByJob(job) {
+    if (!job) {
+      const err = new Error("Missing job");
+      err.name = "BadRequest";
+      throw err;
+    }
+    const rows = await ContactRepository.findEmailsByJob(job);
+    return rows.map(r => r.email).filter(Boolean);
+  }
 };
 
 export default ContactService;
