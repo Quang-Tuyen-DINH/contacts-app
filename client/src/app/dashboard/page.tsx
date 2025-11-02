@@ -20,14 +20,17 @@ const getCountContacts = async (): Promise<CountResult> => {
   }
 };
 
-export default async function DashboardPage() {
+const DashboardPage = async () => {
   const { total, error } = await getCountContacts();
 
   return (
     <main style={{ padding: 24 }}>
       <h2>Dashboard</h2>
+      <p>Name: Quang Tuyen DINH</p>
       <p>Total contacts: {total}</p>
       <DashboardNotifier error={error} />
     </main>
   );
 }
+
+export default DashboardPage;

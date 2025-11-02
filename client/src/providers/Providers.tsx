@@ -31,7 +31,7 @@ const fetcher = async (url: string) => {
   }
 }
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -43,3 +43,5 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     </ThemeProvider>
   )
 }
+
+export default Providers;

@@ -27,11 +27,11 @@ const notifProps: ToastOptions = {
 
 export const NotificationsContext = createContext<NotifyFn>(() => {});
 
-export function useNotify() {
+export const useNotify = () => {
   return useContext(NotificationsContext);
 }
 
-export default function NotificationsProvider({ children }: { children: React.ReactNode }) {
+const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
   const notify = useMemo<NotifyFn>(
     () => ({ type, label }) => {
       switch (type) {
@@ -64,3 +64,5 @@ export default function NotificationsProvider({ children }: { children: React.Re
     </NotificationsContext.Provider>
   );
 }
+
+export default NotificationsProvider;
