@@ -2,7 +2,7 @@ import React from 'react';
 import "../../../styles/contacts/_component/ContactSearchBar.scss"
 
 type ContactSearchBarProps = {
-  searchContact: (event: React.ChangeEvent<HTMLInputElement>) => void
+  searchContact: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function ContactSearchBar({ searchContact }: ContactSearchBarProps) {

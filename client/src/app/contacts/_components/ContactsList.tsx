@@ -7,7 +7,7 @@ import { useNotify } from '@/providers/Notification.provider';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ContactCard from './contactCard';
 import { api } from '@/lib/api';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PageData } from '../page';
 import "../../../styles/contacts/_component/ContactsList.scss";
 import ContactSearchBar from './ContactSearchBar';
@@ -28,29 +28,42 @@ const ContactList = ({
   const notify = useNotify();
   const router = useRouter();
   const params = useSearchParams();
-
+  const currentSearch = params.get('search') ?? '';
+  
   const pageFromUrl = Number(params.get('page') ?? initialPage) || initialPage;
   const limitFromUrl = Number(params.get('limit') ?? initialLimit) || initialLimit;
 
-  const key = `/api/contacts?page=${pageFromUrl}&limit=${limitFromUrl}${search ? `&search=${encodeURIComponent(search)}` : ''}`;
+  const key = `/api/contacts?page=${pageFromUrl}&limit=${limitFromUrl}${currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : ''}`;
   const { data, error, isLoading, isValidating } = useSWR<PageData>(key, { fallbackData: initial });
   const loading = isLoading && !data;
   const refreshing = isValidating && !!data;
 
   const [contactToBeUpdated, setContactToBeUpdated] = useState<Contact | null>(null);
   const [emailToSearchContacts, setEmailToSearchContacts] = useState<string>("");
+  const [debouncedEmail, setDebouncedEmail] = useState(emailToSearchContacts);
   const [displayedModalUpdate, setDisplayedModalUpdate] = useState<boolean>(false);
 
-  const updateQuery = (nextPage: number, nextLimit: number) => {
+  useEffect(() => {
+    setEmailToSearchContacts(currentSearch);
+  }, [currentSearch]);
+
+  const updateQuery = (nextPage: number, nextLimit: number, nextSearch?: string) => {
     const qs = new URLSearchParams(params.toString());
     qs.set('page', String(nextPage));
     qs.set('limit', String(nextLimit));
-    if (search) {
-      qs.set('search', search);
+
+    const effectiveSearch = (typeof nextSearch === 'string' ? nextSearch : currentSearch).trim();
+    if (effectiveSearch) {
+      qs.set('search', effectiveSearch);
     } else {
       qs.delete('search');
     }
-    router.replace(`/contacts?${qs.toString()}`, { scroll: false });
+
+    const nextHref = `/contacts?${qs.toString()}`;
+    const currentHref = `/contacts?${params.toString()}`;
+    if (nextHref !== currentHref) {
+      router.replace(nextHref, { scroll: false });
+    }
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, nextPage: number) => {
@@ -102,6 +115,20 @@ const ContactList = ({
     notify({ type: "errorUnexpected", label: "No contacts found." });
     return <Alert severity="info">No contacts found.</Alert>;
   }
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedEmail(emailToSearchContacts);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [emailToSearchContacts]);
+
+  useEffect(() => {
+    if (debouncedEmail !== currentSearch) {
+      updateQuery(1, limitFromUrl, debouncedEmail);
+    }
+  }, [limitFromUrl, debouncedEmail]);
 
   return (
     <div className="contacts-container">
