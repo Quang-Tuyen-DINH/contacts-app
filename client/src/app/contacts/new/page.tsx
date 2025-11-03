@@ -4,15 +4,15 @@ import { useRouter } from 'next/navigation';
 import type { Contact } from '@/shared/models/Contact.model';
 import ContactCreateUpdateForm from '../_components/contactCreateUpdateForm';
 
-const NewContactPage = ({ contact }: { contact: Contact | null }) => {
-  const router = useRouter();
-  const handleCancel = () => router.push('/contacts');
+const NewContactPage = () => {
 
   return (
-    <ContactCreateUpdateForm
-      contactToBeUpdated={contact}
-      handleCancel={handleCancel}
-    />
+    <main>
+      <h1>New contact</h1>
+      <ContactCreateUpdateForm
+        contactToBeUpdated={null}
+      />
+    </main>
   );
 }
 

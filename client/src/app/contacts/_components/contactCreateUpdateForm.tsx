@@ -1,3 +1,5 @@
+"use client";
+
 import { useNotify } from '@/providers/Notification.provider';
 import { Contact } from '@/shared/models/Contact.model';
 import { useEffect } from 'react';
@@ -5,6 +7,7 @@ import "../../../styles/contacts/_component/ContactCreateUpdateForm.scss"
 import { type SubmitHandler, useForm, type UseFormRegister } from "react-hook-form";
 import { api } from '@/lib/api';
 import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 export type ContactFormValues = {
   firstName: string;
@@ -29,7 +32,6 @@ type InputComponentProps = {
 
 type ContactCreateUpdateFormProps = {
   contactToBeUpdated: Contact | null;
-  handleCancel: () => void;
 }
 
 const checkoutFormData: CreateUpdateContactInputData[] = [
@@ -84,10 +86,10 @@ const InputComponent = ({ data, register }: InputComponentProps) => {
 }
 
 const ContactCreateUpdateForm = ({
-  handleCancel,
   contactToBeUpdated
 }: ContactCreateUpdateFormProps) => {
   const notify = useNotify();
+  const router = useRouter();
   const { setValue, trigger, register, handleSubmit, setFocus, formState, reset } = useForm<ContactFormValues>({ mode: "onChange" });
   const { isValid } = formState;
 
@@ -98,6 +100,8 @@ const ContactCreateUpdateForm = ({
     if (contact.job) setValue("job", contact.job);
     if (contact.comment) setValue("comment", contact.comment);
   }
+
+  const handleCancel = () => router.push('/contacts');
 
   const onSubmit: SubmitHandler<ContactFormValues> = (data) => {
     console.log(data)
@@ -153,9 +157,6 @@ const ContactCreateUpdateForm = ({
   
   return (
     <div className="contact-create-update-form-container">
-        <div className="contact-create-update-form-container__header">
-          <h2>Add contact</h2>
-        </div>
         <form className="contact-create-update-form-container__form" onSubmit={handleSubmit(onSubmit)}>
           <div className="contact-create-update-form-container__form__inputs-container">
             {checkoutFormData.map((data: CreateUpdateContactInputData) => (

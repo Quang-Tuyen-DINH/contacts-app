@@ -7,21 +7,19 @@ import { useNotify } from '@/providers/Notification.provider';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ContactCard from './contactCard';
 import { api } from '@/lib/api';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PageData } from '../page';
 import "../../../styles/contacts/_component/ContactsList.scss";
 import ContactSearchBar from './ContactSearchBar';
 
 type ContactsListProps = {
   initial: PageData;
-  search: string;
   initialPage: number;
   initialLimit: number
 }
 
 const ContactList = ({
   initial,
-  search,
   initialPage,
   initialLimit
 }: ContactsListProps) => {
@@ -84,8 +82,9 @@ const ContactList = ({
 
   const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-
-    const nextLimit = Number(event.target.value) || initialLimit;
+    const raw = Number(event.target.value);
+    // Clamp between 1 and 100; fall back to current limit when NaN
+    const nextLimit = Number.isFinite(raw) ? Math.min(100, Math.max(1, Math.floor(raw))) : limitFromUrl;
     updateQuery(1, nextLimit); // reset to first page when page size changes
   };
 
@@ -120,7 +119,7 @@ const ContactList = ({
 
   const handleUpdate = (e: React.MouseEvent<HTMLButtonElement>, contact: Contact) => {
     e.preventDefault();
-    router.push(`/contacts/update/${contact._id}`)
+    router.push(`/contacts/update/${contact._id}`);
   }
 
   const handleNewContact = () => {
@@ -130,7 +129,7 @@ const ContactList = ({
   if (error) return <Alert severity="error">Failed to load contacts.</Alert>;
   if (isLoading && !data) return <CircularProgress size={24} />;
 
-  const pageData = data ?? initial;             // avoid naming clash with `page`
+  const pageData = data ?? initial;
   const currentPage = pageFromUrl;
   const totalPages = pageData.pages || 1;
   const total = pageData.total;
@@ -175,7 +174,14 @@ const ContactList = ({
             <Pagination count={totalPages} page={currentPage} onChange={handlePageChange} />
           </div>
           <div className="contacts-container__footer__limit-input">
-            <input value={limitFromUrl} onChange={handleLimitChange}></input>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              inputMode="numeric"
+              value={limitFromUrl}
+              onChange={handleLimitChange}
+            />
             <span>contacts per page of total {total} contact(s)</span>
           </div>
         </div>

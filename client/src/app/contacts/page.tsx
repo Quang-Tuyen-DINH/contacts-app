@@ -51,7 +51,7 @@ const ContactsPage = async ({
 
   return (
     <main>
-      <ContactList initial={initial} search={search} initialPage={page} initialLimit={limit} />
+      <ContactList initial={initial} initialPage={page} initialLimit={limit} />
       <ContactNotifier error={initial.error} />
     </main>
   );
