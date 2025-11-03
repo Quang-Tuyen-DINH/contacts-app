@@ -50,10 +50,10 @@ const ContactsPage = async ({
   const initial = await getInitialData(search, page, limit);
 
   return (
-    <main>
+    <div>
       <ContactList initial={initial} initialPage={page} initialLimit={limit} />
       <ContactNotifier error={initial.error} />
-    </main>
+    </div>
   );
 }
 
