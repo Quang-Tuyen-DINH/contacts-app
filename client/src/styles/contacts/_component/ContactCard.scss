@@ -1,0 +1,66 @@
+.contact-card-container {
+  width: 280px;
+  padding: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 15px;
+  background-color: #313131;
+  box-shadow: #00000033 0px 2px 8px 0px;
+
+  &:hover{
+    background: #424242;
+  }
+
+  &__header {
+    width: inherit;
+
+    &__name {
+      height: 72px;
+      font-weight: bold;
+      font-size: 22px;
+    }
+  }
+
+  &__body {
+    width: inherit;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    span {
+      width: 240px;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__job {
+      display: flex;
+      flex-wrap: nowrap;
+
+      span {
+        display: inline-block;
+      }
+    }
+
+    &__email {
+
+    }
+
+    &__comment {
+      height: 72px;
+      overflow: scroll !important;
+      white-space: normal !important;
+      scrollbar-width: none;        /* Firefox */
+      -ms-overflow-style: none;  
+    }
+  }
+
+  &__buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+}
