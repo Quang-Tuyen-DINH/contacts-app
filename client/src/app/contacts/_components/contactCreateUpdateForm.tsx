@@ -104,7 +104,6 @@ const ContactCreateUpdateForm = ({
   const handleCancel = () => router.push('/contacts');
 
   const onSubmit: SubmitHandler<ContactFormValues> = (data) => {
-    console.log(data)
     if (contactToBeUpdated) {
       handleSubmitUpdate(contactToBeUpdated._id, data);
     } else {

@@ -5,7 +5,6 @@ import ContactCreateUpdateForm from '../../_components/contactCreateUpdateForm';
 import "../../../../styles/contacts/update/Page.scss";
 
 async function getContactOrNull(id: string): Promise<Contact | null> {
-  console.log("THIS IS ID ",id)
   try {
     const res = await fetch(api(`/contacts/${id}`), { cache: 'no-store' });
     if (!res.ok) {
