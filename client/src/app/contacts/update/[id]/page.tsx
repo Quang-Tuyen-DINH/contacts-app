@@ -33,11 +33,11 @@ export default async function EditContactPage({
   if (!contact) notFound();
 
   return (
-    <main className="contact-update-container">
+    <div className="contact-update-container">
       <h1 className="contact-update-container__title">New contact</h1>
       <div className="contact-update-container__body">
         <ContactCreateUpdateForm contactToBeUpdated={contact} />
       </div>
-    </main>
+    </div>
   );
 }

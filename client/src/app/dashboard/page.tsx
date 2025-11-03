@@ -25,14 +25,14 @@ const DashboardPage = async () => {
   const { total, error } = await getCountContacts();
 
   return (
-    <main className="dashboard-container">
+    <div className="dashboard-container">
       <h1 className="dashboard-container__title">Dashboard</h1>
       <div className="dashboard-container__body">
         <p>Contacts management app made by Quang Tuyen DINH</p>
         <p>Total contacts: {total}</p>
       </div>
       <DashboardNotifier error={error} />
-    </main>
+    </div>
   );
 }
 
