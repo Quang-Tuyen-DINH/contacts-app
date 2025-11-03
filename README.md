@@ -8,7 +8,7 @@ Full‑stack contacts manager (Typescript, NextJS, NodeJS, Express, MongoDB) tha
 - Minimal tests for the API (Jest)
 
 ## Tech stack
-- Frontend: Next.js (App Router), React 19, NExtJS 16, TypeScript, SWR, MUI, react-hook-form, react-toastify
+- Frontend: Next.js 16 (App Router), React 19, TypeScript, SWR, MUI, react-hook-form, react-toastify
 - Backend: Node.js, Express, Mongoose (MongoDB)
 - Database: MongoDB
 - Optional rate limiter: Upstash (Redis), disabled if no creds
@@ -61,11 +61,11 @@ Quick links:
 
 ## API
 Root: /contacts
-- POST /contacts — create
-- GET /contacts — list (query: page, limit, search)
-- GET /contacts/:id — details
-- PUT /contacts/:id — update
-- DELETE /contacts/:id — delete
+- POST /contacts - create
+- GET /contacts - list (query: page, limit, search)
+- GET /contacts/:id - details
+- PUT /contacts/:id - update
+- DELETE /contacts/:id - delete
 - GET /contacts/emails?job=JobName — list emails for a job
 
 Implementation:
