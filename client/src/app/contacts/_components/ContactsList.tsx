@@ -7,7 +7,7 @@ import { useNotify } from '@/providers/Notification.provider';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ContactCard from './contactCard';
 import { api } from '@/lib/api';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PageData } from '../page';
 import "../../../styles/contacts/_component/ContactsList.scss";
 import ContactSearchBar from './ContactSearchBar';
@@ -30,6 +30,7 @@ const ContactList = ({
   
   const pageFromUrl = Number(params.get('page') ?? initialPage) || initialPage;
   const limitFromUrl = Number(params.get('limit') ?? initialLimit) || initialLimit;
+  const [draftLimit, setDraftLimit] = useState<string>(String(limitFromUrl));
 
   const key = `/api/contacts?page=${pageFromUrl}&limit=${limitFromUrl}${currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : ''}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<PageData>(key, { fallbackData: initial });
@@ -80,13 +81,16 @@ const ContactList = ({
     updateQuery(nextPage, limitFromUrl);
   };
 
-  const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const raw = Number(event.target.value);
+  const handleSetDraftLimit = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDraftLimit(event.target.value);
+  }
+
+  const handleLimitChange = useCallback(() => {
+    const raw = Number(draftLimit);
     // Clamp between 1 and 100; fall back to current limit when NaN
     const nextLimit = Number.isFinite(raw) ? Math.min(100, Math.max(1, Math.floor(raw))) : limitFromUrl;
     updateQuery(1, nextLimit); // reset to first page when page size changes
-  };
+  }, [draftLimit]);
 
   const handleSearchContact = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmailToSearchContacts(event.target.value);
@@ -133,10 +137,7 @@ const ContactList = ({
   const currentPage = pageFromUrl;
   const totalPages = pageData.pages || 1;
   const total = pageData.total;
-
-  if (!pageData.data.length) {
-    return <Alert severity="info">No contacts found.</Alert>;
-  }
+  const noContactsFound = !pageData.data.length;
 
   return (
     <div className="contacts-container">
@@ -152,6 +153,13 @@ const ContactList = ({
           {refreshing &&
             <div className="contacts-container__body__list-section__loader">
               <CircularProgress />
+            </div>
+          }
+          {noContactsFound &&
+            <div className="contacts-container__body__list-section__no-contacts">
+              <span className="contacts-container__body__list-section__no-contacts__indicator">
+                No contacts found.
+              </span>
             </div>
           }
           {!refreshing &&
@@ -178,9 +186,9 @@ const ContactList = ({
               type="number"
               min={1}
               max={100}
-              inputMode="numeric"
-              value={limitFromUrl}
-              onChange={handleLimitChange}
+              value={draftLimit}
+              onChange={handleSetDraftLimit}
+              onBlur={handleLimitChange}
             />
             <span>contacts per page of total {total} contact(s)</span>
           </div>
