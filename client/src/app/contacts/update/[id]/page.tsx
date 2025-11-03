@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { api } from '@/lib/api';
 import type { Contact } from '@/shared/models/Contact.model';
 import ContactCreateUpdateForm from '../../_components/contactCreateUpdateForm';
+import "../../../../styles/contacts/update/Page.scss";
 
 async function getContactOrNull(id: string): Promise<Contact | null> {
   console.log("THIS IS ID ",id)
@@ -32,9 +33,11 @@ export default async function EditContactPage({
   if (!contact) notFound();
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Edit contact</h1>
-      <ContactCreateUpdateForm contactToBeUpdated={contact} />
+    <main className="contact-update-container">
+      <h1 className="contact-update-container__title">New contact</h1>
+      <div className="contact-update-container__body">
+        <ContactCreateUpdateForm contactToBeUpdated={contact} />
+      </div>
     </main>
   );
 }

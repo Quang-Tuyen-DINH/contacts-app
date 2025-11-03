@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 import { REVALIDATE } from "@/lib/cache";
 import DashboardNotifier from "./_components/DashboardNotifier";
+import "../../styles/dashboard/Page.scss";
 
 export const revalidate = REVALIDATE.dashboard;
 
@@ -24,10 +25,12 @@ const DashboardPage = async () => {
   const { total, error } = await getCountContacts();
 
   return (
-    <main style={{ padding: 24 }}>
-      <h2>Dashboard</h2>
-      <p>Name: Quang Tuyen DINH</p>
-      <p>Total contacts: {total}</p>
+    <main className="dashboard-container">
+      <h1 className="dashboard-container__title">Dashboard</h1>
+      <div className="dashboard-container__body">
+        <p>Contacts management app made by Quang Tuyen DINH</p>
+        <p>Total contacts: {total}</p>
+      </div>
       <DashboardNotifier error={error} />
     </main>
   );
