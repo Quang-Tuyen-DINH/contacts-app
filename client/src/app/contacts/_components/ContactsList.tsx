@@ -133,10 +133,7 @@ const ContactList = ({
   const currentPage = pageFromUrl;
   const totalPages = pageData.pages || 1;
   const total = pageData.total;
-
-  if (!pageData.data.length) {
-    return <Alert severity="info">No contacts found.</Alert>;
-  }
+  const noContactsFound = !pageData.data.length;
 
   return (
     <div className="contacts-container">
@@ -152,6 +149,13 @@ const ContactList = ({
           {refreshing &&
             <div className="contacts-container__body__list-section__loader">
               <CircularProgress />
+            </div>
+          }
+          {noContactsFound &&
+            <div className="contacts-container__body__list-section__no-contacts">
+              <span className="contacts-container__body__list-section__no-contacts__indicator">
+                No contacts found.
+              </span>
             </div>
           }
           {!refreshing &&
